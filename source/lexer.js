@@ -135,7 +135,7 @@ var Lexer = {
             this.advance();
         }
         // Reserved word!
-        console.log(token_value.toUpperCase())
+       
         if(my_tools.isReservedKeyword(token_value.toUpperCase(), 0, 6, TokenType)){
             token.type = token_value.toUpperCase();
             token.value = token_value.toUpperCase();

@@ -1,11 +1,19 @@
-int a(int b, int c){
-	int j;
-	j = b + c;
-	return j;
-}
 
+
+int demo(int d)
+{
+	d=d+2;
+	return d*2;
+}
+ 
 void main(void)
 {
 	int a;
-	return;
+	int b;
+	int c;
+	a=3;
+	b=4;
+	c=2;
+	a= demo(c);
+	return ;
 }
