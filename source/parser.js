@@ -147,6 +147,14 @@ var parser = {
                 return true;
             }
             else if(cur_op == "error"){
+                var cur_len = input.length - 1;
+                var cur_token = my_tools.arrIndex(this.token_list, -cur_len);
+                this.err_list.push(
+                    "ParseError: Fail to parse at:" + cur_token.value +
+                " line: " + cur_token.line_num + ", col:" + cur_token.col_num);
+                    console.log(cur_token);
+                console.log( "ParseError: Fail to parse at:" + cur_token.value +
+                " line: " + cur_token.line_num + ", col:" + cur_token.col_num);
                 return false;
             }
         }

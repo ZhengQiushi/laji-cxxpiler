@@ -188,14 +188,30 @@ var semantic = {
         console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 
     },
+    recoverArrayName: function(exp_node_value){
+        var exp_node_name = exp_node_value;
+        exp_node_name = exp_node_name.slice(0, exp_node_value.indexOf("["));
+        for(let i = exp_node_value; i.includes("[");){
+            i = i.slice(i.indexOf("]") + 1,i.length);
+            //console.log(i, i.indexOf("]"));
+            exp_node_name += "[]";
+        }
+        return exp_node_name;
+    },
     replaceSymbol:function(exp_node){
         if(!myIsNaN(exp_node.value)){ // not a number
             if(exp_node.value[0] == "t"){ // already is a tmp_reg
                 return exp_node.value;
             }
+            var exp_node_name = exp_node.value;
+            if(exp_node_name.includes("[")){
+                exp_node_name = this.recoverArrayName(exp_node.value);
+            }
+
+            console.log(exp_node_name);
             var cur_func = my_tools.arrIndex(this.func_table, -1);
             //console.log(exp_node)
-            var symbol_ele = this.symbol_table[this.searchSymbolTable(cur_func.value, exp_node.value)];
+            var symbol_ele = this.symbol_table[this.searchSymbolTable(cur_func.value, exp_node_name)];
             
             
             return symbol_ele.tmp_id;    
@@ -225,8 +241,8 @@ var semantic = {
         //console.log(sema_node);
         this.symbol_table.forEach(per_var => {
             //// console.log(per_var)
-            // not in the same function 
-            if(per_var.name == sema_node.value && sema_node.layer >= per_var.layer && cur_field == per_var.func){
+            // not in the same function  with the same name, higer layer and higher field
+            if(per_var.name == sema_node.value && sema_node.layer >= per_var.layer && (cur_field == per_var.func || per_var.func == "global")){
                 is_exist = true;
                 console.log(cur_field, per_var.func);
                 return;
@@ -331,29 +347,13 @@ var semantic = {
 
         });
     },
-    // backpatchFunc: function(list, target){
-    //     //backpatch all items in the list with the addr quad
-    //     this.emit_code.forEach((per_code, index) => {
-    //         var target_addr = per_code.slice(0, per_code.indexOf(":")); 
-    //         if(list.includes(parseInt(target_addr))){
-    //             this.emit_code[index] = per_code.slice(0,per_code.length - 1) + quad;
-    //         }
-    //     });
-    // },
-    // backpatchJmp: function(list, target){
-    //     //backpatch all items in the list with the addr quad
-    //     this.emit_code.forEach((per_code, index) => {
-    //         var target_addr = per_code.slice(0, per_code.indexOf(":")); 
-    //         if(list.includes(parseInt(target_addr))){
-    //             this.emit_code[index] = per_code.slice(0,per_code.length - 1) + quad;
-    //         }
-    //     });
-    // },
+
 
     newTmp: function(){
         this.new_tmp_num += 1;
         return "t" + this.new_tmp_num;
     },
+
     newJumpDst: function(){
         this.new_jmp_num += 1;
         return "l" + this.new_jmp_num;
@@ -447,8 +447,12 @@ var semantic = {
                     is_success = false;
                 }
                 // ? global pop
-
-                this.symbol_table.push(new symbol_table_element("int", arr_size_node.size, var_name_node.value, this.newTmp(), "global", this.layer, this.symbol_cur_offset));
+                //console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@" + var_name_node.value);
+                var arr_name = var_name_node.value;
+                for(let i = 0 ; i < arr_size_node.size.length; i ++){
+                    arr_name += "[]";
+                }
+                this.symbol_table.push(new symbol_table_element("int", arr_size_node.size, arr_name, this.newTmp(), "global", this.layer, this.symbol_cur_offset));
                 var offset_add = 1;
                 arr_size_node.size.forEach( size => {
                     offset_add *= size;
@@ -764,11 +768,20 @@ var semantic = {
                 // but emit the whole array thing! // hard copy
                 var arr_node_with_real_name = new semanticNode({type:""});
                 Object.assign(arr_node_with_real_name, arr_name_node);
-                arr_node_with_real_name.value = arr_node_with_real_name.value.slice(0, arr_node_with_real_name.value.indexOf("["));
+                //arr_node_with_real_name.value = arr_node_with_real_name.value.slice(0, arr_node_with_real_name.value.indexOf("["));
                 
+                //console.log(arr_name_node)
+
                 var exp_node = my_tools.arrIndex(this.sema_node_list, -2);
+
+                arr_node_with_real_name.value = this.recoverArrayName(arr_node_with_real_name.value);
+
                 if(!this.SearchVarTable(arr_node_with_real_name)){
+                    console.log(this.symbol_table);
+                    console.log(arr_node_with_real_name.value)
                     this.err_list.push("Semantic Error: The Array " + arr_node_with_real_name.value
+                    + " at Position(" + arr_name_node.position + ") is not defined before reference.")
+                    console.log("Semantic Error: The Array " + arr_node_with_real_name.value
                     + " at Position(" + arr_name_node.position + ") is not defined before reference.")
                     is_success = false;
                 }
@@ -893,8 +906,21 @@ var semantic = {
                 var new_non_ter = this.updateNodeList(grammar);
                 new_non_ter.value = this.newTmp();
                 
+                console.log("================");
+                 console.log(exp_node);
+                 console.log(item_node);
 
-                this.emit(op_node.value, this.replaceSymbol(item_node), this.replaceSymbol(exp_node), this.replaceSymbol(new_non_ter));
+                var item_name = item_node.value + "";
+                var exp_name = exp_node.value + "";
+
+                if(!item_name.includes("[")){
+                    item_name = this.replaceSymbol(item_node);
+                }
+                if(!exp_name.includes("[")){
+                    exp_name = this.replaceSymbol(exp_node);
+                }
+
+                this.emit(op_node.value, item_name, exp_name, this.replaceSymbol(new_non_ter));
 
                 break;
             case "U->V":
