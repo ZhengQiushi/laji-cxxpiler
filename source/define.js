@@ -49,6 +49,29 @@ var MAP_TERMINAL_LIST = {"INT": 't', "VOID": 'v', "IF": 'i', "ELSE": 'l', "WHILE
                      "COMMA": ',', "LPAREN": '(', "RPAREN": ')', "LBRACE": '{', "RBRACE": '}',
                      "LBRACKET": 'z', "RBRACKET": 'k'};
 
+var NONTERMIAL_LIST = ['@', 'A', 'B', 'C', 'D', 'E', 'F',
+                   'G', 'H', 'I', 'J', 'K', 'L',
+                   'M', 'N', 'O', 'P', 'Q', 'R',
+                   'S', 'T', 'U', 'V', 'W', 'X',
+                   'Y', 'Z', '[', '', ']', '^', '_', '`'];
+
+var MAP_NONTERMINAL_LIST = {'<Demo>': '@', '<Program>': 'A', '<Declare>': 'B', '<Declare Type>': 'C', '<Variable Declare>': 'D', '<Func Declare>': 'E',
+                    '<Array Declare>': 'F', '<Formal Param>': 'G', '<Formal Param List>': 'H', '<Params>': 'I', '<Statement Block>': 'J',
+                    '<Inner Declare>': 'K', '<Inner Variable Declare>': 'L', '<Statement Set>': "M", '<Statement>': "N", '<Assign Statement>': "O",
+                    '<Return Statement>': 'P', '<While Statement>': 'Q', '<If Statement>': 'R', '<Expression>': 'S', '<Plus Expression>': 'T',
+                    '<Item>': "U", '<Factor>': 'V', '<FTYPE>': 'W', '<call>': 'X', '<Array>': 'Y',
+                    '<Actual Param>': 'Z', '<Actual Param List>': '[', '<placeholder M>': ']', '<placeholder N>': '^',
+                    '<placeholder A>': '_', '<placeholder S>': '`'};
+
+var MAP_REVERSE_NONTERMINAL_EN_LIST = [ '<Demo>', '<Program>',   '<Declare>',   '<Declare Type>',  '<Variable Declare>',
+                                     '<Func Declare>',   '<Array Declare>',   '<Formal Param>',   '<Formal Param List>',
+                                     '<Params>',   '<Statement Block>',   '<Inner Declare>',   '<Inner Variable Declare>',
+                                     "<Statement Set>",   "<Statement>",   "<Assign Statement>",  '<Return Statement>',
+                                     '<While Statement>',   '<If Statement>',  '<Expression>',   '<Plus Expression>',
+                                     "<Item>",   '<Factor>',   '<FTYPE>',   '<Call>',
+                                     '<Array>',  '<Actual Param>',   '<Actual Param List>',   
+                                     '<placeholder M>',   '<placeholder N>',   '<placeholder A>',   '<placeholder S>'];
+
 var MAP_REVERSE_TERMINAL_LIST =[ 'LTE',    'LGE',    'ID',          'EQUAL',  'INTEGER_CONST',
                                  'IF',     'ELSE',   'NOT_EQUAL',   'RETURN', 'INT', 
                                  'VOID',   'WHILE',  'LBRACKET',    'ASSIGN', 'PLUS',
@@ -57,11 +80,7 @@ var MAP_REVERSE_TERMINAL_LIST =[ 'LTE',    'LGE',    'ID',          'EQUAL',  'I
                                  'SEMI',   'COMMA',  'RPAREN',      'LPAREN', 'LBRACE', 
                                  'RBRACE', 'RBRACKET']
 
-var NONTERMIAL_LIST = ['@', 'A', 'B', 'C', 'D', 'E', 'F',
-                   'G', 'H', 'I', 'J', 'K', 'L',
-                   'M', 'N', 'O', 'P', 'Q', 'R',
-                   'S', 'T', 'U', 'V', 'W', 'X',
-                   'Y', 'Z', '[', '', ']', '^', '_', '`'];
+
 
 
 
@@ -111,6 +130,7 @@ module.exports={
     TERMINAL_LIST,
     NONTERMIAL_LIST,
     MAP_TERMINAL_LIST,
+    MAP_NONTERMINAL_LIST,
     MAP_REVERSE_TERMINAL_LIST,
     MAP_REVERSE_NONTERMINAL_EN_LIST,
     GRAMMAR

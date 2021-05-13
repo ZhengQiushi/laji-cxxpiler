@@ -73,6 +73,7 @@ var parser = {
             var cur_input_char = input[0];
             // r12, s0 ....
             var cur_op = this.action_table[status_id[status_id.length-1]][cur_input_char];
+            //console.log(cur_op)
 
             if(cur_op[0] == 's'){
                 // status
